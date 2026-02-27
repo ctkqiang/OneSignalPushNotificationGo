@@ -14,7 +14,7 @@ var (
 )
 
 func main() {
- gin.SetMode(gin.DebugMode)
+  gin.SetMode(gin.DebugMode)
 
 	router := gin.Default()
 
