@@ -37,41 +37,15 @@ var (
 	startTime       = time.Now()
 	CurrentLevel    = INFO
 	errorCallback   func(string)
-	statusCallbacks = make(map[string]func(StatusUpdate))
 	statusMutex     sync.RWMutex
 )
 
-type StatusUpdate struct {
-	StockNo         string
-	LastPrice       float64
-	Volume          float64
-	BestAskSize     float64
-	BestAskCount    float64
-	BestBidPrice    float64
-	TimeReceived    string
-	TimeReceivedISO string
-	TotalRecords    string
-	SequenceNumber  string
-	CreatedAt       string
-	Message         string
-}
-
+// 注册错误回调函数
 func RegisterErrorCallback(cb func(string)) {
 	errorCallback = cb
 }
 
-func RegisterStatusCallback(id string, cb func(StatusUpdate)) {
-	statusMutex.Lock()
-	defer statusMutex.Unlock()
-	statusCallbacks[id] = cb
-}
-
-func UnregisterStatusCallback(id string) {
-	statusMutex.Lock()
-	defer statusMutex.Unlock()
-	delete(statusCallbacks, id)
-}
-
+// 设置日志级别
 func SetLogLevel(levelStr string) {
 	level := strings.ToUpper(levelStr)
 	switch level {
@@ -90,7 +64,7 @@ func SetLogLevel(levelStr string) {
 	}
 }
 
-// ToFloat64 converts any interface value (primarily string or numeric) to float64 safely.
+// ToFloat64 安全地将任意接口值（主要是字符串或数值）转换为 float64
 func ToFloat64(v interface{}) float64 {
 	if v == nil {
 		return 0
@@ -123,6 +97,7 @@ func init() {
 	SetLogLevel(os.Getenv("LOG_LEVEL"))
 }
 
+// 输出日志
 func Log(level LogLevel, format string, a ...interface{}) {
 	if level < CurrentLevel {
 		return
@@ -133,20 +108,20 @@ func Log(level LogLevel, format string, a ...interface{}) {
 
 	switch level {
 	case DEBUG:
-		levelStr = "DEBUG"
+		levelStr = "调试"
 		color = colorYellow
 	case INFO:
-		levelStr = "INFO"
+		levelStr = "信息"
 		color = colorBlue
 	case WARN:
-		levelStr = "WARN"
+		levelStr = "警告"
 		color = colorPink
 	case ERROR:
-		levelStr = "ERROR"
+		levelStr = "错误"
 		color = colorRed
 	case VVERBOSE:
-		levelStr = "VVERBOSE"
-		color = "" // Default
+		levelStr = "超详细"
+		color = "" // 默认
 	}
 
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
@@ -163,20 +138,30 @@ func Log(level LogLevel, format string, a ...interface{}) {
 	}
 }
 
-func Info(format string, a ...interface{})     { Log(INFO, format, a...) }
-func Debug(format string, a ...interface{})    { Log(DEBUG, format, a...) }
-func Warn(format string, a ...interface{})     { Log(WARN, format, a...) }
-func Error(format string, a ...interface{})    { Log(ERROR, format, a...) }
+// 信息日志
+func Info(format string, a ...interface{}) { Log(INFO, format, a...) }
+
+// 调试日志
+func Debug(format string, a ...interface{}) { Log(DEBUG, format, a...) }
+
+// 警告日志
+func Warn(format string, a ...interface{}) { Log(WARN, format, a...) }
+
+// 错误日志
+func Error(format string, a ...interface{}) { Log(ERROR, format, a...) }
+
+// 超详细日志
 func VVerbose(format string, a ...interface{}) { Log(VVERBOSE, format, a...) }
 
+// 获取环境变量，若不存在则返回默认值
 func GetEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value
 	}
-
 	return fallback
 }
 
+// 掩码处理字符串
 func Mask(s string) string {
 	runes := []rune(s)
 	n := len(runes)
@@ -190,18 +175,19 @@ func Mask(s string) string {
 		showCount = n / 3
 	}
 
-	return string(runes[:showCount]) + "[REDACTED]"
+	return string(runes[:showCount]) + "[已掩码]"
 }
 
+// 检查环境变量文件是否存在
 func CheckEnvFile(filePath string) {
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		Error("CRITICAL: .env file NOT FOUND at: %s", filePath)
+		Error("严重：未找到 .env 文件，路径：%s", filePath)
 		return
 	}
-
-	Warn("Confirmed: .env file exists at: %s", filePath)
+	Warn("已确认：.env 文件存在于路径：%s", filePath)
 }
 
+// 检查当前内存使用情况
 func CheckCUrrentMemory() string {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
@@ -214,7 +200,7 @@ func CheckCUrrentMemory() string {
 	numGoroutine := runtime.NumGoroutine()
 
 	status := fmt.Sprintf(
-		"--- [APP_STATE] Memory: Heap=%-7.2fMB | Total=%-7.2fMB | Sys=%-7.2fMB | G-Routines: %-4d | Uptime: %s (since %s)",
+		"--- [应用状态] 内存：堆=%-7.2fMB | 总计=%-7.2fMB | 系统=%-7.2fMB | 协程数：%-4d | 运行时间：%s（自 %s 起）",
 		toMB(m.Alloc),
 		toMB(m.TotalAlloc),
 		toMB(m.Sys),
