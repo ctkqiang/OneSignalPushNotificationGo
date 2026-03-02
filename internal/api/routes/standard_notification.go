@@ -29,6 +29,7 @@ func StandardPushNotification(router *gin.Engine) {
 	public := router.Group(config.SEND_TEXT_PUSH_NOTIFICATION_HEAD)
 	{
 		public.POST(config.SEND_TEXT_PUSH_NOTIFICATION, SendTextPushNotification())
+		public.POST(config.SEND_IMAGE_PUSH_NOTIFICATION , SendTextAndImagePushNotification())
 	}
 }
 
@@ -65,4 +66,8 @@ func SendTextPushNotification() gin.HandlerFunc {
 			"data":    response,
 		})
 	}
+}
+
+func SendTextAndImagePushNotification() gin.HandlerFunc {
+	return nil
 }
