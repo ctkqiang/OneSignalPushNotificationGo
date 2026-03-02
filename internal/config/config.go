@@ -25,8 +25,14 @@ type MySQLDatabase struct {
 	DatabasePort     string `json:"database_port"`
 }
 
+type OneSignalConfig struct {
+	AppID  string
+	APIKey string
+}
+
 var (
-	MySQLCreds    MySQLDatabase
+	MySQLCreds     MySQLDatabase
+	OneSignalCreds OneSignalConfig
 )
 
 func init() {
@@ -55,5 +61,10 @@ func init() {
 		DatabaseName:     os.Getenv("MYSQL_DATABASE"),
 		DatabaseHost:     os.Getenv("MYSQL_HOST"),
 		DatabasePort:     os.Getenv("MYSQL_PORT"),
+	}
+
+	OneSignalCreds = OneSignalConfig{
+		AppID:  os.Getenv("ONESIGNAL_APP_ID"),
+		APIKey: os.Getenv("ONESIGNAL_REST_API_KEY"),
 	}
 }

@@ -1,8 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"valuefarm_pushnotification_services/internal/routes"
+	"valuefarm_pushnotification_services/internal/api/routes"
 	"valuefarm_pushnotification_services/internal/utilities"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,16 @@ var (
 )
 
 func main() {
-  gin.SetMode(gin.DebugMode)
+	releaseMode := flag.Bool("release", false, "以发布模式运行服务器")
+  flag.Parse()
+
+	if *releaseMode {
+		gin.SetMode(gin.ReleaseMode)
+		fmt.Println("运行模式：RELEASE")
+	} else {
+		gin.SetMode(gin.DebugMode)
+		fmt.Println("运行模式：DEBUG")
+	}
 
 	router := gin.Default()
 
