@@ -1,14 +1,12 @@
 package routes
 
 import (
-	"context"
 	"net/http"
 	"pushnotification_services/internal/api/handler"
 	"pushnotification_services/internal/config"
 	"pushnotification_services/internal/structure"
 	"pushnotification_services/internal/utilities"
 
-	"github.com/OneSignal/onesignal-go-api"
 	"github.com/gin-gonic/gin"
 )
 
@@ -47,10 +45,9 @@ func SendTextPushNotification() gin.HandlerFunc {
 		}
 
 		client := &structure.OneSignalClient{
-			APIClient:             onesignal.NewAPIClient(onesignal.NewConfiguration()),
-			ApplicationId:         config.OneSignalCreds.AppID,
-			AuthenticationContext: context.WithValue(context.Background(), onesignal.ContextAPIKeys, "Basic "+config.OneSignalCreds.APIKey),
-		}
+		ApplicationId: config.OneSignalCreds.AppID,
+		APIKey:        config.OneSignalCreds.APIKey,
+	}
 
 		response, err := handler.SendGeneralNotification(client, &request)
 		if err != nil {

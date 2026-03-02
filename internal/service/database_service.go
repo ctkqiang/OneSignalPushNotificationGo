@@ -17,13 +17,22 @@ import (
 func GetMongoDatabaseConnection() (*mongo.Client, error) {
 	creds := config.MongoDBCreds
 
-	connectionString := fmt.Sprintf("mongodb://%s:%s@%s:%s/%s",
-		creds.DatabaseUser,
-		creds.DatabasePassword,
-		creds.DatabaseHost,
-		creds.DatabasePort,
-		creds.DatabaseName,
-	)
+	var connectionString string
+	if creds.DatabaseUser != "" && creds.DatabasePassword != "" {
+		connectionString = fmt.Sprintf("mongodb://%s:%s@%s:%s/%s",
+			creds.DatabaseUser,
+			creds.DatabasePassword,
+			creds.DatabaseHost,
+			creds.DatabasePort,
+			creds.DatabaseName,
+		)
+	} else {
+		connectionString = fmt.Sprintf("mongodb://%s:%s/%s",
+			creds.DatabaseHost,
+			creds.DatabasePort,
+			creds.DatabaseName,
+		)
+	}
 
 	clientOptions := options.Client().ApplyURI(connectionString)
 
