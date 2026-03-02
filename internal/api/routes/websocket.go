@@ -2,6 +2,7 @@ package routes
 
 import (
 	"pushnotification_services/internal/api/handler"
+	"pushnotification_services/internal/config"
 	"pushnotification_services/internal/structure"
 
 	"github.com/gin-gonic/gin"
@@ -18,8 +19,8 @@ func WebSocketRoutes(router *gin.Engine) {
 	if WebSocketManager == nil {
 		InitWebSocketManager()
 	}
-	
-	router.GET("/ws/announcement", func(c *gin.Context) {
+
+	router.GET(config.WEBSCOKET_CHANNEL, func(c *gin.Context) {
 		handler.HandleWebSocket(WebSocketManager, c)
 	})
 }
