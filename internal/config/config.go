@@ -17,7 +17,7 @@ var (
 )
 
 
-type MySQLDatabase struct {
+type MongoDBConfig struct {
 	DatabaseUser     string `json:"database_user"`
 	DatabasePassword string `json:"database_password"`
 	DatabaseName     string `json:"database_name"`
@@ -25,14 +25,19 @@ type MySQLDatabase struct {
 	DatabasePort     string `json:"database_port"`
 }
 
+
 type OneSignalConfig struct {
 	AppID  string
 	APIKey string
 }
 
 var (
-	MySQLCreds     MySQLDatabase
-	OneSignalCreds OneSignalConfig
+	COLLECTION_NOTIFICATIONS = "notifications_log"
+)
+
+var (
+	MongoDBCreds    MongoDBConfig
+	OneSignalCreds  OneSignalConfig
 )
 
 func init() {
@@ -55,12 +60,12 @@ func init() {
 		}
 	}
 
-	MySQLCreds = MySQLDatabase{
-		DatabaseUser:     os.Getenv("MYSQL_USER"),
-		DatabasePassword: os.Getenv("MYSQL_PASSWORD"),
-		DatabaseName:     os.Getenv("MYSQL_DATABASE"),
-		DatabaseHost:     os.Getenv("MYSQL_HOST"),
-		DatabasePort:     os.Getenv("MYSQL_PORT"),
+	MongoDBCreds = MongoDBConfig{
+		DatabaseUser:     os.Getenv("MONGODB_USER"),
+		DatabasePassword: os.Getenv("MONGODB_PASSWORD"),
+		DatabaseName:     os.Getenv("MONGODB_DATABASE"),
+		DatabaseHost:     os.Getenv("MONGODB_HOST"),
+		DatabasePort:     os.Getenv("MONGODB_PORT"),
 	}
 
 	OneSignalCreds = OneSignalConfig{

@@ -3,7 +3,8 @@ package structure
 type NotificationContent struct { 
 	Title string `json:"title"`
 	Message string `json:"message"`
-	ImageUrl string `json:"image_url"`
-	Channel string `json:"channel"`
+	ImageUrl *string `json:"image_url,omitempty"`
+	Channel *string `json:"channel,omitempty"`
 	Locale Locale `json:"locale"`
+	Segments  *[]string `json:"segments,omitempty"`
 }
