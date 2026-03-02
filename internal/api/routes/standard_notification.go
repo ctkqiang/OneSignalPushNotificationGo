@@ -10,6 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var (
+	request structure.NotificationContent
+)
+
 // StandardPushNotification 注册标准推送通知路由
 // @Summary 发送文本推送通知
 // @Description 发送通用文本推送通知到所有用户。此端点用于发送面向全体用户的通知，如系统公告、重要更新等。
@@ -29,13 +33,12 @@ func StandardPushNotification(router *gin.Engine) {
 	public := router.Group(config.SEND_TEXT_PUSH_NOTIFICATION_HEAD)
 	{
 		public.POST(config.SEND_TEXT_PUSH_NOTIFICATION, SendTextPushNotification())
-		public.POST(config.SEND_IMAGE_PUSH_NOTIFICATION , SendTextAndImagePushNotification())
+		public.POST(config.SEND_IMAGE_PUSH_NOTIFICATION, SendTextAndImagePushNotification())
 	}
 }
 
 func SendTextPushNotification() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var request structure.NotificationContent
 		if err := c.ShouldBindJSON(&request); err != nil {
 			utilities.Log(utilities.ERROR, "解析请求参数失败: %s", err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -46,9 +49,9 @@ func SendTextPushNotification() gin.HandlerFunc {
 		}
 
 		client := &structure.OneSignalClient{
-		ApplicationId: config.OneSignalCreds.AppID,
-		APIKey:        config.OneSignalCreds.APIKey,
-	}
+			ApplicationId: config.OneSignalCreds.AppID,
+			APIKey:        config.OneSignalCreds.APIKey,
+		}
 
 		response, err := handler.SendGeneralNotification(client, &request, WebSocketManager)
 		if err != nil {
