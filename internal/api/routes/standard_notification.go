@@ -49,7 +49,7 @@ func SendTextPushNotification() gin.HandlerFunc {
 		APIKey:        config.OneSignalCreds.APIKey,
 	}
 
-		response, err := handler.SendGeneralNotification(client, &request)
+		response, err := handler.SendGeneralNotification(client, &request, WebSocketManager)
 		if err != nil {
 			utilities.Log(utilities.ERROR, "发送通知失败: %s", err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{

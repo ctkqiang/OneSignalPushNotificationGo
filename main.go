@@ -40,7 +40,9 @@ func main() {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	routes.InitWebSocketManager()
 	routes.StandardPushNotification(router)
+	routes.WebSocketRoutes(router)
 
 	if err := router.Run(fmt.Sprintf(":%d", Port)); err != nil {
 		utilities.Log(utilities.ERROR, "HTTP 服务启动失败: %v", err)
