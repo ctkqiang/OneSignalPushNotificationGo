@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
-	"valuefarm_pushnotification_services/internal/config"
-	"valuefarm_pushnotification_services/internal/utilities"
+	"pushnotification_services/internal/config"
+	"pushnotification_services/internal/utilities"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

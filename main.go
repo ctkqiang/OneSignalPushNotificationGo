@@ -3,10 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"valuefarm_pushnotification_services/internal/api/routes"
-	"valuefarm_pushnotification_services/internal/utilities"
+	"pushnotification_services/internal/api/routes"
+	"pushnotification_services/internal/utilities"
+
+	_ "pushnotification_services/docs"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var (
@@ -14,9 +18,13 @@ var (
 	Port        = 8080
 )
 
+// @title 推送通知服务
+// @version 1.0
+// @description 提供推送通知相关的 API 接口
+// @BasePath /api
 func main() {
 	releaseMode := flag.Bool("release", false, "以发布模式运行服务器")
-  flag.Parse()
+	flag.Parse()
 
 	if *releaseMode {
 		gin.SetMode(gin.ReleaseMode)
@@ -29,9 +37,10 @@ func main() {
 	router := gin.Default()
 
 	router.Use(gin.Recovery())
-  router.Run(Addr)
 
-  routes.StandardPushNotification(router, nil)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	routes.StandardPushNotification(router)
 
 	if err := router.Run(fmt.Sprintf(":%d", Port)); err != nil {
 		utilities.Log(utilities.ERROR, "HTTP 服务启动失败: %v", err)

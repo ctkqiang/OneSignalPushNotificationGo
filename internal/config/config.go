@@ -3,7 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
-	"valuefarm_pushnotification_services/internal/utilities"
+	"pushnotification_services/internal/utilities"
 
 	"github.com/joho/godotenv"
 )

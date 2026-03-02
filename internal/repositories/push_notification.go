@@ -2,10 +2,10 @@ package repositories
 
 import (
 	"context"
-	"valuefarm_pushnotification_services/internal/config"
-	"valuefarm_pushnotification_services/internal/database"
-	"valuefarm_pushnotification_services/internal/service"
-	"valuefarm_pushnotification_services/internal/utilities"
+	"pushnotification_services/internal/config"
+	"pushnotification_services/internal/database"
+	"pushnotification_services/internal/service"
+	"pushnotification_services/internal/utilities"
 )
 
 func SaveRecord(record *database.NotificationResponse) error {

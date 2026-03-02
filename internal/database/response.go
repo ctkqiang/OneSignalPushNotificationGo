@@ -1,7 +1,7 @@
 package database
 
 import (
-	"valuefarm_pushnotification_services/internal/structure"
+	"pushnotification_services/internal/structure"
 
 	"github.com/kamva/mgm/v3"
 )

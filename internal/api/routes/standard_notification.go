@@ -3,10 +3,10 @@ package routes
 import (
 	"context"
 	"net/http"
-	"valuefarm_pushnotification_services/internal/api/handler"
-	"valuefarm_pushnotification_services/internal/config"
-	"valuefarm_pushnotification_services/internal/structure"
-	"valuefarm_pushnotification_services/internal/utilities"
+	"pushnotification_services/internal/api/handler"
+	"pushnotification_services/internal/config"
+	"pushnotification_services/internal/structure"
+	"pushnotification_services/internal/utilities"
 
 	"github.com/OneSignal/onesignal-go-api"
 	"github.com/gin-gonic/gin"
@@ -14,7 +14,8 @@ import (
 
 // StandardPushNotification 注册标准推送通知路由
 // @Summary 发送文本推送通知
-// @Description 发送通用文本推送通知到所有用户
+// @Description 发送通用文本推送通知到所有用户。此端点用于发送面向全体用户的通知，如系统公告、重要更新等。
+// @Description 警告：请勿使用此端点发送用户特定的通知，因为它会广播给所有用户。对于用户特定的通知，请使用专门的用户定向通知端点。
 // @Tags 通知
 // @Accept json
 // @Produce json

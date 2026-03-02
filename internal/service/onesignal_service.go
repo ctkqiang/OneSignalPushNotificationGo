@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"valuefarm_pushnotification_services/internal/config"
-	"valuefarm_pushnotification_services/internal/structure"
-	"valuefarm_pushnotification_services/internal/utilities"
+	"pushnotification_services/internal/config"
+	"pushnotification_services/internal/structure"
+	"pushnotification_services/internal/utilities"
 
 	"github.com/OneSignal/onesignal-go-api"
 )
@@ -17,7 +17,7 @@ func OneSignalConnection() *structure.OneSignalClient{
 	if appID == "" {
 		utilities.Log(utilities.ERROR, "环境变量中缺少 OneSignal AppID")
 	}
-	
+
 	if apiKey == "" {
 		utilities.Log(utilities.ERROR, "环境变量中缺少 OneSignal APIKey")
 	}

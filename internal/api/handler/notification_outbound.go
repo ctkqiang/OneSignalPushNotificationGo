@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"valuefarm_pushnotification_services/internal/database"
-	"valuefarm_pushnotification_services/internal/repositories"
-	"valuefarm_pushnotification_services/internal/structure"
-	"valuefarm_pushnotification_services/internal/utilities"
+	"pushnotification_services/internal/database"
+	"pushnotification_services/internal/repositories"
+	"pushnotification_services/internal/structure"
+	"pushnotification_services/internal/utilities"
 
 	"github.com/OneSignal/onesignal-go-api"
 )

@@ -4,7 +4,7 @@ import (
 	"flag"
 	"io"
 	"os"
-	"valuefarm_pushnotification_services/internal/utilities"
+	"pushnotification_services/internal/utilities"
 )
 
 func GetDevelopmentFlavours() (string, error) {
