@@ -1,4 +1,4 @@
-basePath: /api
+basePath: /
 definitions:
   structure.Locale:
     enum:
@@ -31,7 +31,7 @@ info:
   title: 推送通知服务
   version: "1.0"
 paths:
-  /api/notification/text:
+  /push/text:
     post:
       consumes:
       - application/json

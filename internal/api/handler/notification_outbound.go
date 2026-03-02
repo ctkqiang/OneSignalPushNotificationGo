@@ -24,8 +24,6 @@ func CreateBaseNotification(appID, title, message string) *onesignal.Notificatio
 	return &notification
 }
 
-
-
 // SendGeneralNotification 发送通用通知
 // 此函数仅用于发送通用通知，只包含标题和消息文本，不包含图片
 // 通知将广播给所有用户，不针对特定分段

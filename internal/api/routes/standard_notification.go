@@ -23,8 +23,8 @@ import (
 // @Success 200 {object} map[string]interface{} "成功响应"
 // @Failure 400 {object} map[string]interface{} "请求参数错误"
 // @Failure 500 {object} map[string]interface{} "服务器内部错误"
-// @Router /api/notification/text [post]
-// @Example curl -X POST http://localhost:8080/api/notification/text \
+// @Router /push/text [post]
+// @Example curl -X POST http://localhost:8080/push/text \
 // @Example   -H "Content-Type: application/json" \
 // @Example   -d '{"title": "测试通知", "message": "这是一条测试通知"}'
 func StandardPushNotification(router *gin.Engine) {

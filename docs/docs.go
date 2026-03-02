@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/notification/text": {
+        "/push/text": {
             "post": {
                 "description": "发送通用文本推送通知到所有用户。此端点用于发送面向全体用户的通知，如系统公告、重要更新等。\n警告：请勿使用此端点发送用户特定的通知，因为它会广播给所有用户。对于用户特定的通知，请使用专门的用户定向通知端点。",
                 "consumes": [
@@ -110,7 +110,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
-	BasePath:         "/api",
+	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "推送通知服务",
 	Description:      "提供推送通知相关的 API 接口",

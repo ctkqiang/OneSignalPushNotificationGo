@@ -13,7 +13,7 @@ import (
 type LogLevel int
 
 const (
-	APP_NAME = "VALUEFARM"
+	APP_NAME = "PUSH_NOTIFICATION_SERVICE"
 	VERSION  = "1.0.0"
 )
 

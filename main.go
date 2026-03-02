@@ -21,7 +21,7 @@ var (
 // @title 推送通知服务
 // @version 1.0
 // @description 提供推送通知相关的 API 接口
-// @BasePath /api
+// @BasePath /
 func main() {
 	releaseMode := flag.Bool("release", false, "以发布模式运行服务器")
 	flag.Parse()
