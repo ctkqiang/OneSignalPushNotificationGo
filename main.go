@@ -32,9 +32,9 @@ func main() {
 	// 优先使用环境变量中的MODE设置
 	mode := os.Getenv("MODE")
 	if mode == "" {
+		// 如果环境变量中没有，使用命令行参数
 		releaseMode := flag.Bool("release", false, "以发布模式运行服务器")
 		flag.Parse()
-    
 		if *releaseMode {
 			mode = "release"
 		} else {
@@ -58,6 +58,7 @@ func main() {
 	router.GET(config.SWAGGER_DOCS, ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	routes.InitWebSocketManager()
+	routes.General(router)
 	routes.StandardPushNotification(router)
 	routes.WebSocketRoutes(router)
 	routes.Segmentation(router)

@@ -1,9 +1,13 @@
 package config
 
+
 var (
+	INDEX = "/"
 	WEBSCOKET_CHANNEL = "/ws/announcement"
 
 	SWAGGER_DOCS = "/swagger/*any"
+
+	HEALTH = "/health"
 )
 
 var (
