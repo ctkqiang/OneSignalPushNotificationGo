@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"pushnotification_services/internal/api/routes"
+	"pushnotification_services/internal/config"
 	"pushnotification_services/internal/utilities"
 
 	_ "pushnotification_services/docs"
@@ -20,7 +21,10 @@ var (
 
 // @title 推送通知服务
 // @version 1.0
-// @description 提供推送通知相关的 API 接口
+// @author 钟智强
+// @description 提供推送通知相关的 API 接口，支持发送文本和图片通知，集成 OneSignal 推送服务，
+// @description 提供 WebSocket 实时通知功能，支持向所有用户广播通知，
+// @description 同时提供通知记录存储和管理功能，为应用提供完整的推送通知解决方案
 // @BasePath /
 func main() {
 	releaseMode := flag.Bool("release", false, "以发布模式运行服务器")
@@ -38,11 +42,12 @@ func main() {
 
 	router.Use(gin.Recovery())
 
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.GET(config.SWAGGER_DOCS, ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	routes.InitWebSocketManager()
 	routes.StandardPushNotification(router)
 	routes.WebSocketRoutes(router)
+	routes.Segmentation(router)
 
 	if err := router.Run(fmt.Sprintf(":%d", Port)); err != nil {
 		utilities.Log(utilities.ERROR, "HTTP 服务启动失败: %v", err)

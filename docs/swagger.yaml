@@ -27,7 +27,10 @@ definitions:
     type: object
 info:
   contact: {}
-  description: 提供推送通知相关的 API 接口
+  description: |-
+    提供推送通知相关的 API 接口，支持发送文本和图片通知，集成 OneSignal 推送服务，
+    提供 WebSocket 实时通知功能，支持向所有用户广播通知，
+    同时提供通知记录存储和管理功能，为应用提供完整的推送通知解决方案
   title: 推送通知服务
   version: "1.0"
 paths:
@@ -66,4 +69,60 @@ paths:
       summary: 发送文本推送通知
       tags:
       - 通知
+  /push/text-image:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        发送包含图片的推送通知到所有用户。此端点用于发送面向全体用户的通知，如系统公告、重要更新等，支持添加图片。
+        警告：请勿使用此端点发送用户特定的通知，因为它会广播给所有用户。对于用户特定的通知，请使用专门的用户定向通知端点。
+      parameters:
+      - description: 通知内容
+        in: body
+        name: notification
+        required: true
+        schema:
+          $ref: '#/definitions/structure.NotificationContent'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 发送文本和图片推送通知
+      tags:
+      - 通知
+  /segment/all:
+    get:
+      consumes:
+      - application/json
+      description: 获取 OneSignal 中的所有分段信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取所有分段
+      tags:
+      - 分段管理
 swagger: "2.0"

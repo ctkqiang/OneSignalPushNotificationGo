@@ -6,6 +6,7 @@ type OneSignalNotificationRequest struct {
 	Contents         map[string]string `json:"contents"`
 	Headings         map[string]string `json:"headings"`
 	IncludedSegments []string          `json:"included_segments"`
+	BigPicture       string            `json:"big_picture,omitempty"`
 }
 
 // OneSignalNotificationResponse 定义 OneSignal API 响应结构
