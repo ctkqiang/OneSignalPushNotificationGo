@@ -1,5 +1,31 @@
 basePath: /
 definitions:
+  structure.Announcement:
+    properties:
+      created_at:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      message:
+        type: string
+      priority:
+        type: string
+      started_at:
+        type: string
+      type:
+        type: string
+    type: object
+  structure.AuditTrail:
+    properties:
+      pushed_at:
+        type: string
+      pushed_by:
+        type: string
+      via:
+        type: string
+    type: object
   structure.Locale:
     enum:
     - en
@@ -10,6 +36,8 @@ definitions:
     - LocaleZH
   structure.NotificationContent:
     properties:
+      audit_trail:
+        $ref: '#/definitions/structure.AuditTrail'
       channel:
         type: string
       image_url:
@@ -34,6 +62,156 @@ info:
   title: 推送通知服务
   version: "1.0"
 paths:
+  /announcement/all:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有公告信息，按创建时间降序排序
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取所有公告
+      tags:
+      - 公告管理
+  /announcement/create:
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的公告并保存到数据库
+      parameters:
+      - description: 公告信息
+        in: body
+        name: announcement
+        required: true
+        schema:
+          $ref: '#/definitions/structure.Announcement'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 创建新公告
+      tags:
+      - 公告管理
+  /announcement/delete:
+    delete:
+      consumes:
+      - application/json
+      description: 根据 ID 删除公告
+      parameters:
+      - description: 公告 ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 删除公告
+      tags:
+      - 公告管理
+  /announcement/latest:
+    get:
+      consumes:
+      - application/json
+      description: 获取最新的公告信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: 没有找到公告
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取最新公告
+      tags:
+      - 公告管理
+  /announcement/update:
+    put:
+      consumes:
+      - application/json
+      description: 根据 ID 更新公告信息
+      parameters:
+      - description: 公告 ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: 公告信息
+        in: body
+        name: announcement
+        required: true
+        schema:
+          $ref: '#/definitions/structure.Announcement'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 更新公告
+      tags:
+      - 公告管理
   /push/text:
     post:
       consumes:

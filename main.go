@@ -48,6 +48,7 @@ func main() {
 	routes.StandardPushNotification(router)
 	routes.WebSocketRoutes(router)
 	routes.Segmentation(router)
+	routes.Announcement(router)
 
 	if err := router.Run(fmt.Sprintf(":%d", Port)); err != nil {
 		utilities.Log(utilities.ERROR, "HTTP 服务启动失败: %v", err)

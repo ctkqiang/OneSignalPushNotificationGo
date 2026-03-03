@@ -7,4 +7,5 @@ type NotificationContent struct {
 	Channel *string `json:"channel,omitempty"`
 	Locale *Locale `json:"locale,omitempty"`
 	Segments  *[]string `json:"segments,omitempty"`
+	AuditTrail AuditTrail `json:"audit_trail"`
 }

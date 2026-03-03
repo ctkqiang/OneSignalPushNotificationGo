@@ -6,6 +6,7 @@ import (
 	"pushnotification_services/internal/config"
 	"pushnotification_services/internal/structure"
 	"pushnotification_services/internal/utilities"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,6 +50,9 @@ func SendTextPushNotification() gin.HandlerFunc {
 			})
 			return
 		}
+		
+		// 设置推送时间为当前时间
+		request.AuditTrail.PushedAt = time.Now().Format(time.RFC3339)
 
 		client := &structure.OneSignalClient{
 			ApplicationId: config.OneSignalCreds.AppID,
@@ -99,6 +103,9 @@ func SendTextAndImagePushNotification() gin.HandlerFunc {
 			})
 			return
 		}
+		
+		// 设置推送时间为当前时间
+		request.AuditTrail.PushedAt = time.Now().Format(time.RFC3339)
 
 		client := &structure.OneSignalClient{
 			ApplicationId: config.OneSignalCreds.AppID,
@@ -112,6 +119,7 @@ func SendTextAndImagePushNotification() gin.HandlerFunc {
 				"status":  "error",
 				"message": "发送通知失败",
 			})
+			
 			return
 		}
 
