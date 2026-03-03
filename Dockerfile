@@ -12,4 +12,4 @@ COPY --from=builder /app/pushservice .
 COPY --from=builder /app/internal/config ./internal/config
 COPY --from=builder /app/docs ./docs
 EXPOSE 8080
-CMD ["./pushservice"]
+CMD ["./pushservice", "--release"]
