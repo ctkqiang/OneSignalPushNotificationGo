@@ -5,7 +5,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - .env
+      - internal/config/.env
     restart: unless-stopped
     mem_limit: 256m
     cpus: 0.5
