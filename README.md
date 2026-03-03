@@ -33,6 +33,10 @@ PushNoification/
 │   ├── swagger.json    # Swagger JSON 文档
 │   ├── swagger.yaml    # Swagger YAML 文档
 │   └── sequence.puml   # 序列图文档
+├── out/                # 输出目录
+│   └── docs/
+│       └── sequence/
+│           └── sequence.png  # 序列图图片
 ├── internal/           # 内部代码
 │   ├── api/            # API 相关代码
 │   │   ├── handler/    # 请求处理器
@@ -130,6 +134,14 @@ http://localhost:8080/swagger/index.html
    - X-XSS-Protection: 1; mode=block
    - Strict-Transport-Security: max-age=31536000; includeSubDomains
 
+## 序列图
+
+项目包含详细的系统交互序列图，展示了推送通知的完整流程：
+
+![序列图](out/docs/sequence/sequence.png)
+
+序列图文件位于 `docs/sequence.puml`，可以使用 PlantUML 工具查看和编辑。
+
 ## 示例使用
 
 ### 发送文本通知
@@ -147,15 +159,6 @@ curl -X POST http://localhost:8080/push/text-image \
   -H "Content-Type: application/json" \
   -d '{"title": "测试通知", "message": "这是一条包含图片的测试通知", "image_url": "https://example.com/image.jpg"}'
 ```
-
-## 序列图
-
-项目包含以下序列图：
-
-- **发送文本推送通知流程**：展示了从客户端发起请求到通知发送完成的完整流程
-- **发送文本和图片推送通知流程**：展示了包含图片的通知发送流程
-
-序列图文件位于 `docs/sequence.puml`，可以使用 PlantUML 工具查看。
 
 ## 贡献指南
 

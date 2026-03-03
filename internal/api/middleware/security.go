@@ -101,12 +101,10 @@ func (rl *RateLimiter) Stop() {
 func isSQLInjectionPattern(input string) bool {
 	input = strings.ToLower(strings.TrimSpace(input))
 	
-	// 跳过空字符串和常见合法值
 	if input == "" || input == "string" || input == "en" || input == "via" {
 		return false
 	}
 	
-	// 使用正则表达式检测SQL注入模式
 	sqlPatterns := []string{
 		`\b(select|insert|update|delete|drop|truncate|create|alter|rename|grant|revoke)\s+`,
 		`\b(union|exec|execute|declare|set)\s+`,
@@ -133,14 +131,11 @@ func isSQLInjectionPattern(input string) bool {
 }
 
 func containsMaliciousKeyword(s string) bool {
-	// 如果是JSON格式的字符串，先解析再检查
 	var jsonData interface{}
 	if err := json.Unmarshal([]byte(s), &jsonData); err == nil {
-		// 是JSON，递归检查每个值
 		return checkJSONForSQLInjection(jsonData)
 	}
 	
-	// 普通字符串检查
 	return isSQLInjectionPattern(s)
 }
 
@@ -168,7 +163,6 @@ func SecurityMiddleware() gin.HandlerFunc {
 	rateLimiter := NewRateLimiter(60, time.Minute, time.Minute*5)
 
 	return func(c *gin.Context) {
-		// 跳过Swagger相关路径
 		if strings.HasPrefix(c.Request.URL.Path, "/swagger") {
 			c.Next()
 			return
@@ -187,7 +181,6 @@ func SecurityMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// 检查URL参数
 		for _, values := range c.Request.URL.Query() {
 			for _, value := range values {
 				if containsMaliciousKeyword(value) {
@@ -201,7 +194,6 @@ func SecurityMiddleware() gin.HandlerFunc {
 			}
 		}
 
-		// 检查请求头
 		for name, values := range c.Request.Header {
 			if name != "User-Agent" && name != "Content-Type" {
 				for _, value := range values {
@@ -217,7 +209,6 @@ func SecurityMiddleware() gin.HandlerFunc {
 			}
 		}
 
-		// 检查请求体
 		if c.Request.Body != nil {
 			body, err := io.ReadAll(c.Request.Body)
 			if err == nil {
@@ -229,7 +220,6 @@ func SecurityMiddleware() gin.HandlerFunc {
 					c.Abort()
 					return
 				}
-				// 重置请求体
 				c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 			}
 		}
@@ -245,13 +235,11 @@ func SecurityMiddleware() gin.HandlerFunc {
 
 func BlockSQLInjectionInParmametersAndBody() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 跳过Swagger相关路径
 		if strings.HasPrefix(c.Request.URL.Path, "/swagger") {
 			c.Next()
 			return
 		}
 
-		// 检查URL参数
 		for _, values := range c.Request.URL.Query() {
 			for _, value := range values {
 				if containsMaliciousKeyword(value) {
@@ -265,7 +253,6 @@ func BlockSQLInjectionInParmametersAndBody() gin.HandlerFunc {
 			}
 		}
 
-		// 检查请求头
 		for name, values := range c.Request.Header {
 			if name != "User-Agent" && name != "Content-Type" {
 				for _, value := range values {
@@ -281,7 +268,6 @@ func BlockSQLInjectionInParmametersAndBody() gin.HandlerFunc {
 			}
 		}
 
-		// 检查请求体
 		if c.Request.Body != nil {
 			body, err := io.ReadAll(c.Request.Body)
 			if err == nil {
@@ -293,7 +279,6 @@ func BlockSQLInjectionInParmametersAndBody() gin.HandlerFunc {
 					c.Abort()
 					return
 				}
-				// 重置请求体
 				c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 			}
 		}
