@@ -16,7 +16,6 @@ var (
 	LOG_INFO    = LogMode("INFO")
 )
 
-
 type MongoDBConfig struct {
 	DatabaseUser     string `json:"database_user"`
 	DatabasePassword string `json:"database_password"`
@@ -24,7 +23,6 @@ type MongoDBConfig struct {
 	DatabaseHost     string `json:"database_host"`
 	DatabasePort     string `json:"database_port"`
 }
-
 
 type OneSignalConfig struct {
 	AppID  string
@@ -37,18 +35,17 @@ var (
 )
 
 var (
-	MongoDBCreds    MongoDBConfig
-	OneSignalCreds  OneSignalConfig
+	MongoDBCreds   MongoDBConfig
+	OneSignalCreds OneSignalConfig
 )
 
 func init() {
-	selectedEnviornmentFlavours, err:=  GetDevelopmentFlavours()
+	selectedEnviornmentFlavours, err := GetDevelopmentFlavours()
 	if err != nil {
 		utilities.Log(utilities.ERROR, "Environment Error %s", err.Error())
 	}
 
 	workspaceDirectory, err := os.Getwd()
-	
 	if err == nil {
 		envPath := filepath.Join(workspaceDirectory, "internal", "config", selectedEnviornmentFlavours)
 
@@ -61,11 +58,19 @@ func init() {
 		}
 	}
 
+	// Docker环境检测和主机配置
+	host := os.Getenv("MONGODB_HOST")
+	if host == "localhost" || host == "" {
+		if os.Getenv("DOCKER_ENV") == "true" {
+			host = "mongodb"
+		}
+	}
+
 	MongoDBCreds = MongoDBConfig{
 		DatabaseUser:     os.Getenv("MONGODB_USER"),
 		DatabasePassword: os.Getenv("MONGODB_PASSWORD"),
 		DatabaseName:     os.Getenv("MONGODB_DATABASE"),
-		DatabaseHost:     os.Getenv("MONGODB_HOST"),
+		DatabaseHost:     host,
 		DatabasePort:     os.Getenv("MONGODB_PORT"),
 	}
 
