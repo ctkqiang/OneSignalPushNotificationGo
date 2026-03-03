@@ -3,9 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"pushnotification_services/internal/api/middleware"
 	"pushnotification_services/internal/api/routes"
 	"pushnotification_services/internal/config"
 	"pushnotification_services/internal/utilities"
+  
 
 	_ "pushnotification_services/docs"
 
@@ -41,6 +43,7 @@ func main() {
 	router := gin.Default()
 
 	router.Use(gin.Recovery())
+	router.Use(middleware.SecurityMiddleware())
 
 	router.GET(config.SWAGGER_DOCS, ginSwagger.WrapHandler(swaggerFiles.Handler))
 
