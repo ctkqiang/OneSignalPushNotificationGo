@@ -32,7 +32,8 @@ type OneSignalConfig struct {
 }
 
 var (
-	COLLECTION_NOTIFICATIONS = "notifications_log"
+	COLLECTION_NOTIFICATIONS = "notifications"
+	COLLECTION_ANNOUNCEMENTS = "announcements"
 )
 
 var (

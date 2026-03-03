@@ -2,16 +2,17 @@ package repositories
 
 import (
 	"context"
-	"pushnotification_services/internal/structure"
+	"pushnotification_services/internal/config"
 	"pushnotification_services/internal/service"
+	"pushnotification_services/internal/structure"
 	"pushnotification_services/internal/utilities"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const (
-	announcementsCollection = "announcements"
+var (
+	announcementsCollection = config.COLLECTION_ANNOUNCEMENTS
 )
 
 func WriteAnnouncement(announcement structure.Announcement) error {

@@ -2,74 +2,16 @@ package middleware
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"net/http"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
-
-var keywords = []string{
-	// 基本 DML/DQL/DCL 操作
-	"select",
-	"insert",
-	"update",
-	"delete",
-	"drop",
-	"truncate",
-	"exec",
-	"execute",
-	"union",
-	"create",
-	"alter",
-	"rename",
-	"grant",
-	"revoke",
-	"show",
-	"describe",
-
-	// 系统库
-	"information_schema",
-	"table_schema",
-
-	// 时间延迟攻击
-	"sleep",
-	"benchmark",
-
-	// 注释语法
-	"--",
-	"#",
-	";",
-
-	// 布尔型注入
-	"or ",
-	"and ",
-	"1=1",
-	"1 = 1",
-	"' or",
-	"\" or",
-	"' and",
-	"\" and",
-
-	// 高危函数和系统对象
-	"xp_cmdshell",
-	"sysobjects",
-	"syscolumns",
-	"char(",
-	"concat(",
-	"cast(",
-	"convert(",
-
-	// 文件操作
-	"declare",
-	"set global",
-	"load_file(",
-	"outfile",
-	"load data",
-	"into outfile",
-}
 
 type RateLimiter struct {
 	ips      map[string][]time.Time
@@ -156,11 +98,67 @@ func (rl *RateLimiter) Stop() {
 	close(rl.stopChan)
 }
 
-func containsMaliciousKeyword(s string) bool {
-	s = strings.ToLower(s)
-	for _, keyword := range keywords {
-		if strings.Contains(s, keyword) {
+func isSQLInjectionPattern(input string) bool {
+	input = strings.ToLower(strings.TrimSpace(input))
+	
+	// 跳过空字符串和常见合法值
+	if input == "" || input == "string" || input == "en" || input == "via" {
+		return false
+	}
+	
+	// 使用正则表达式检测SQL注入模式
+	sqlPatterns := []string{
+		`\b(select|insert|update|delete|drop|truncate|create|alter|rename|grant|revoke)\s+`,
+		`\b(union|exec|execute|declare|set)\s+`,
+		`\b(sleep|benchmark)\s*\(`,
+		`\b(or|and)\s+\d+\s*=\s*\d+`,
+		`'\s*(or|and)\s+`,
+		`"\s*(or|and)\s+`,
+		`\b(xp_cmdshell|sysobjects|syscolumns)\b`,
+		`\b(information_schema|table_schema)\b`,
+		`\b(load_file|outfile|into\s+outfile)\b`,
+		`--`,
+		`#`,
+		`\b1\s*=\s*1\b`,
+	}
+	
+	for _, pattern := range sqlPatterns {
+		matched, _ := regexp.MatchString(pattern, input)
+		if matched {
 			return true
+		}
+	}
+	
+	return false
+}
+
+func containsMaliciousKeyword(s string) bool {
+	// 如果是JSON格式的字符串，先解析再检查
+	var jsonData interface{}
+	if err := json.Unmarshal([]byte(s), &jsonData); err == nil {
+		// 是JSON，递归检查每个值
+		return checkJSONForSQLInjection(jsonData)
+	}
+	
+	// 普通字符串检查
+	return isSQLInjectionPattern(s)
+}
+
+func checkJSONForSQLInjection(data interface{}) bool {
+	switch v := data.(type) {
+	case string:
+		return isSQLInjectionPattern(v)
+	case map[string]interface{}:
+		for _, value := range v {
+			if checkJSONForSQLInjection(value) {
+				return true
+			}
+		}
+	case []interface{}:
+		for _, item := range v {
+			if checkJSONForSQLInjection(item) {
+				return true
+			}
 		}
 	}
 	return false
@@ -170,6 +168,12 @@ func SecurityMiddleware() gin.HandlerFunc {
 	rateLimiter := NewRateLimiter(60, time.Minute, time.Minute*5)
 
 	return func(c *gin.Context) {
+		// 跳过Swagger相关路径
+		if strings.HasPrefix(c.Request.URL.Path, "/swagger") {
+			c.Next()
+			return
+		}
+
 		c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 1<<20)
 
 		ip := c.ClientIP()
@@ -241,6 +245,12 @@ func SecurityMiddleware() gin.HandlerFunc {
 
 func BlockSQLInjectionInParmametersAndBody() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// 跳过Swagger相关路径
+		if strings.HasPrefix(c.Request.URL.Path, "/swagger") {
+			c.Next()
+			return
+		}
+
 		// 检查URL参数
 		for _, values := range c.Request.URL.Query() {
 			for _, value := range values {
