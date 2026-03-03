@@ -15,6 +15,8 @@
   - 安全 HTTP 头部设置
 - 自动生成 Swagger API 文档
 - 详细的序列图文档
+- 公告管理功能
+- 分段管理功能
 
 ## 技术栈
 
@@ -23,6 +25,7 @@
 - **API 文档**：Swagger
 - **文档工具**：PlantUML
 - **语言**：Go
+- **数据库**：MongoDB
 
 ## 项目结构
 
@@ -56,6 +59,7 @@ PushNoification/
 
 - Go 1.18+ 环境
 - OneSignal 账号和应用凭据
+- MongoDB 数据库
 
 ### 安装步骤
 
@@ -68,11 +72,18 @@ PushNoification/
 
 3. 配置环境变量
    - 设置 OneSignal 应用 ID 和 API Key
+   - 设置 MongoDB 连接信息
 
 4. 运行服务
    ```bash
    go run main.go
    ```
+
+### Docker 运行
+
+```bash
+docker-compose up -d
+```
 
 ## API 文档
 
@@ -82,46 +93,182 @@ PushNoification/
 http://localhost:8080/swagger/index.html
 ```
 
-### 主要 API 端点
+## API 端点详解
 
-#### 发送文本推送通知
+### 推送通知相关 API
+
+#### 1. 发送文本推送通知
 - **URL**: `/push/text`
 - **方法**: POST
-- **请求体**:
-  ```json
-  {
-    "title": "通知标题",
-    "message": "通知内容"
-  }
-  ```
-- **响应**:
-  ```json
-  {
-    "status": "success",
-    "message": "通知发送成功",
-    "data": { /* OneSignal 响应数据 */ }
-  }
-  ```
+- **标签**: 通知
+- **描述**: 发送通用文本推送通知到所有用户。此端点用于发送面向全体用户的通知，如系统公告、重要更新等。警告：请勿使用此端点发送用户特定的通知，因为它会广播给所有用户。
 
-#### 发送文本和图片推送通知
+**请求参数**:
+```json
+{
+  "title": "通知标题",
+  "message": "通知内容",
+  "image_url": "可选的图片URL",
+  "segments": ["可选的用户分段数组"],
+  "locale": "en",
+  "channel": "通知渠道",
+  "audit_trail": {
+    "pushed_by": "发送者",
+    "pushed_at": "2024-01-15T10:00:00Z",
+    "via": "发送方式"
+  }
+}
+```
+
+**cURL 示例**:
+```bash
+curl -X POST http://localhost:8080/push/text \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "系统维护通知",
+    "message": "系统将于今晚进行维护，预计维护时间2小时",
+    "locale": "zh"
+  }'
+```
+
+**响应示例**:
+```json
+{
+  "status": "success",
+  "message": "通知发送成功",
+  "data": {
+    "id": "通知ID",
+    "recipients": 1500
+  }
+}
+```
+
+#### 2. 发送文本和图片推送通知
 - **URL**: `/push/text-image`
 - **方法**: POST
-- **请求体**:
-  ```json
-  {
-    "title": "通知标题",
-    "message": "通知内容",
-    "image_url": "https://example.com/image.jpg"
-  }
-  ```
-- **响应**:
-  ```json
-  {
-    "status": "success",
-    "message": "通知发送成功",
-    "data": { /* OneSignal 响应数据 */ }
-  }
-  ```
+- **标签**: 通知
+- **描述**: 发送包含图片的推送通知到所有用户。此端点用于发送面向全体用户的通知，如系统公告、重要更新等，支持添加图片。
+
+**请求参数**: 同 `/push/text`，但包含 `image_url` 字段
+
+**cURL 示例**:
+```bash
+curl -X POST http://localhost:8080/push/text-image \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "新功能发布",
+    "message": "我们很高兴地宣布新功能正式上线！",
+    "image_url": "https://example.com/feature-banner.jpg",
+    "locale": "zh"
+  }'
+```
+
+### 公告管理 API
+
+#### 3. 创建新公告
+- **URL**: `/announcement/create`
+- **方法**: POST
+- **标签**: 公告管理
+- **描述**: 创建一个新的公告并保存到数据库。公告用于向用户发布重要信息，包括系统维护、活动通知、节假日安排等。
+
+**请求参数**:
+```json
+{
+  "id": "announcement_001",
+  "type": "EVENT",
+  "message": "系统维护通知：将于本周末进行系统升级维护",
+  "priority": "HIGH",
+  "created_at": "2024-01-15T10:00:00Z",
+  "started_at": "2024-01-20T09:00:00Z",
+  "expires_at": "2024-01-21T18:00:00Z"
+}
+```
+
+**cURL 示例**:
+```bash
+curl -X POST http://localhost:8080/announcement/create \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": "maint_20240115",
+    "type": "EVENT",
+    "message": "系统维护通知：将于本周六进行系统升级维护，预计2小时",
+    "priority": "HIGH",
+    "started_at": "2024-01-20T02:00:00Z",
+    "expires_at": "2024-01-20T04:00:00Z"
+  }'
+```
+
+#### 4. 删除公告
+- **URL**: `/announcement/delete`
+- **方法**: DELETE
+- **标签**: 公告管理
+- **描述**: 根据公告ID从数据库中永久删除指定的公告记录。此操作不可恢复，请谨慎使用。
+
+**请求参数**: `id` (查询参数)
+
+**cURL 示例**:
+```bash
+curl -X DELETE "http://localhost:8080/announcement/delete?id=maint_20240115"
+```
+
+#### 5. 获取最新公告
+- **URL**: `/announcement/latest`
+- **方法**: GET
+- **标签**: 公告管理
+- **描述**: 获取系统中最新发布的公告信息。该接口返回按创建时间排序的最新一条公告记录。
+
+**cURL 示例**:
+```bash
+curl -X GET http://localhost:8080/announcement/latest
+```
+
+#### 6. 更新公告
+- **URL**: `/announcement/update`
+- **方法**: PUT
+- **标签**: 公告管理
+- **描述**: 根据公告ID更新现有的公告信息。可以修改公告的所有字段，包括类型、内容、优先级和时间信息。
+
+**请求参数**: 
+- `id` (查询参数): 公告ID
+- 请求体: 完整的公告对象
+
+**cURL 示例**:
+```bash
+curl -X PUT "http://localhost:8080/announcement/update?id=maint_20240115" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": "maint_20240115",
+    "type": "EVENT",
+    "message": "系统维护时间调整：提前至周五晚上进行",
+    "priority": "HIGH",
+    "started_at": "2024-01-19T02:00:00Z",
+    "expires_at": "2024-01-19T04:00:00Z"
+  }'
+```
+
+#### 7. 获取所有公告
+- **URL**: `/announcement/all`
+- **方法**: GET
+- **标签**: 公告管理
+- **描述**: 获取系统中所有的公告信息，按创建时间降序排序。返回的公告列表包含每个公告的完整信息。
+
+**cURL 示例**:
+```bash
+curl -X GET http://localhost:8080/announcement/all
+```
+
+### 分段管理 API
+
+#### 8. 获取所有分段
+- **URL**: `/segment/all`
+- **方法**: GET
+- **标签**: 分段管理
+- **描述**: 获取 OneSignal 中的所有分段信息
+
+**cURL 示例**:
+```bash
+curl -X GET http://localhost:8080/segment/all
+```
 
 ## 安全特性
 
@@ -142,22 +289,22 @@ http://localhost:8080/swagger/index.html
 
 序列图文件位于 `docs/sequence.puml`，可以使用 PlantUML 工具查看和编辑。
 
-## 示例使用
+## Docker 部署
 
-### 发送文本通知
-
+### 开发环境
 ```bash
-curl -X POST http://localhost:8080/push/text \
-  -H "Content-Type: application/json" \
-  -d '{"title": "测试通知", "message": "这是一条测试通知"}'
+# 复制环境文件
+cp internal/config/.env.example internal/config/.env
+# 编辑 internal/config/.env 填入测试数据
+docker-compose up -d
 ```
 
-### 发送文本和图片通知
-
+### 生产环境
 ```bash
-curl -X POST http://localhost:8080/push/text-image \
-  -H "Content-Type: application/json" \
-  -d '{"title": "测试通知", "message": "这是一条包含图片的测试通知", "image_url": "https://example.com/image.jpg"}'
+# 复制环境文件
+cp internal/config/.env.example internal/config/.env
+# 编辑 internal/config/.env 填入生产数据
+docker-compose up -d
 ```
 
 ## 贡献指南
