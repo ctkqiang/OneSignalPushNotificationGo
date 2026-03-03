@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"pushnotification_services/internal/api/middleware"
 	"pushnotification_services/internal/api/routes"
 	"pushnotification_services/internal/config"
 	"pushnotification_services/internal/utilities"
-  
 
 	_ "pushnotification_services/docs"
 
@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	Addr        = ":8080"
-	Port        = 8080
+	Addr = ":8080"
+	Port = 8080
 )
 
 // @title 推送通知服务
@@ -29,10 +29,20 @@ var (
 // @description 同时提供通知记录存储和管理功能，为应用提供完整的推送通知解决方案
 // @BasePath /
 func main() {
-	releaseMode := flag.Bool("release", false, "以发布模式运行服务器")
-	flag.Parse()
+	// 优先使用环境变量中的MODE设置
+	mode := os.Getenv("MODE")
+	if mode == "" {
+		releaseMode := flag.Bool("release", false, "以发布模式运行服务器")
+		flag.Parse()
+    
+		if *releaseMode {
+			mode = "release"
+		} else {
+			mode = "debug"
+		}
+	}
 
-	if *releaseMode {
+	if mode == "release" {
 		gin.SetMode(gin.ReleaseMode)
 		fmt.Println("运行模式：RELEASE")
 	} else {
