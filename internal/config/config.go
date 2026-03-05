@@ -29,6 +29,13 @@ type OneSignalConfig struct {
 	APIKey string
 }
 
+type JWEConfig struct {
+	KeyAES256 string `json:"key_aes_256"`
+	Salt      string `json:"salt"`
+	Cipher    string `json:"cipher"`
+	IsCaesar  bool   `json:"is_caesar"`
+}
+
 var (
 	COLLECTION_NOTIFICATIONS = "notifications"
 	COLLECTION_ANNOUNCEMENTS = "announcements"
@@ -37,6 +44,7 @@ var (
 var (
 	MongoDBCreds   MongoDBConfig
 	OneSignalCreds OneSignalConfig
+	JWECreds       JWEConfig
 )
 
 func init() {
@@ -77,5 +85,12 @@ func init() {
 	OneSignalCreds = OneSignalConfig{
 		AppID:  os.Getenv("ONESIGNAL_APP_ID"),
 		APIKey: os.Getenv("ONESIGNAL_REST_API_KEY"),
+	}
+
+	JWECreds = JWEConfig{
+		KeyAES256: os.Getenv("JWE_KEY_AES_256"),
+		Salt:      "no-salt",
+		Cipher:    "AES-256-CBC",
+		IsCaesar:  false,
 	}
 }

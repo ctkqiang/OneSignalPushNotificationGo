@@ -3,8 +3,7 @@ package structure
 type Priority string
 
 var (
-	PriorityHigh   Priority = "high"
-	PriorityNormal Priority = "normal"
-	PriorityLow    Priority = "low"
-	PriorityNone   Priority = "none"
+	HIGH   Priority = "HIGH"
+	NORMAL Priority = "NORMAL"
+	LOW    Priority = "LOW"
 )

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"pushnotification_services/internal/config"
 	"pushnotification_services/internal/repositories"
+	"pushnotification_services/internal/security"
 	"pushnotification_services/internal/structure"
 	"pushnotification_services/internal/utilities"
 
@@ -80,10 +81,21 @@ func CreateAnnouncement() gin.HandlerFunc {
 			return
 		}
 
+		// 加密公告数据后返回
+		jweToken, err := security.EncryptPayload(announcement)
+		if err != nil {
+			utilities.Log(utilities.ERROR, "加密公告失败: %s", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status":  "error",
+				"message": "加密公告失败",
+			})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
-			"status":  "success",
-			"message": "公告创建成功",
-			"data":    announcement,
+			"status":      "success",
+			"message":     "公告创建成功",
+			"secure_data": jweToken,
 		})
 	}
 }
@@ -170,10 +182,21 @@ func GetLatestAnnouncement() gin.HandlerFunc {
 			return
 		}
 
+		// 加密公告数据后返回
+		jweToken, err := security.EncryptPayload(announcement)
+		if err != nil {
+			utilities.Log(utilities.ERROR, "加密公告失败: %s", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status":  "error",
+				"message": "加密公告失败",
+			})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
-			"status":  "success",
-			"message": "获取最新公告成功",
-			"data":    announcement,
+			"status":      "success",
+			"message":     "获取最新公告成功",
+			"secure_data": jweToken,
 		})
 	}
 }
@@ -234,10 +257,21 @@ func UpdateAnnouncement() gin.HandlerFunc {
 			return
 		}
 
+		// 加密更新后的公告数据返回
+		jweToken, err := security.EncryptPayload(announcement)
+		if err != nil {
+			utilities.Log(utilities.ERROR, "加密公告失败: %s", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status":  "error",
+				"message": "加密公告失败",
+			})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
-			"status":  "success",
-			"message": "公告更新成功",
-			"data":    announcement,
+			"status":      "success",
+			"message":     "公告更新成功",
+			"secure_data": jweToken,
 		})
 	}
 }
@@ -275,10 +309,21 @@ func GetAllAnnouncements() gin.HandlerFunc {
 			return
 		}
 
+		// 加密所有公告数据后返回
+		jweToken, err := security.EncryptPayload(announcements)
+		if err != nil {
+			utilities.Log(utilities.ERROR, "加密公告失败: %s", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status":  "error",
+				"message": "加密公告失败",
+			})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
-			"status":  "success",
-			"message": "获取所有公告成功",
-			"data":    announcements,
+			"status":      "success",
+			"message":     "获取所有公告成功",
+			"secure_data": jweToken,
 		})
 	}
 }

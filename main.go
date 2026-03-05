@@ -29,6 +29,7 @@ var (
 // @description 同时提供通知记录存储和管理功能，为应用提供完整的推送通知解决方案
 // @BasePath /
 func main() {
+	// 优先使用环境变量中的MODE设置
 	mode := os.Getenv("MODE")
 	if mode == "" {
 		// 如果环境变量中没有，使用命令行参数
@@ -54,10 +55,10 @@ func main() {
 	router.Use(gin.Recovery())
 	router.Use(middleware.SecurityMiddleware())
 
+	routes.General(router)
 	router.GET(config.SWAGGER_DOCS, ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	routes.InitWebSocketManager()
-	routes.General(router)
 	routes.StandardPushNotification(router)
 	routes.WebSocketRoutes(router)
 	routes.Segmentation(router)

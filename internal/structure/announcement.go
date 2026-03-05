@@ -1,6 +1,10 @@
 package structure
 
-import "time"
+import (
+	"time"
+
+	"github.com/kamva/mgm/v3"
+)
 
 type AnnouncementType string
 
@@ -10,11 +14,13 @@ var (
 )
 
 type Announcement struct {
-	ID        string           `bson:"_id,omitempty" json:"id"`
-	Type      AnnouncementType `bson:"type" json:"type"`
-	Message   string           `bson:"message" json:"message"`
-	Priority  Priority         `bson:"priority" json:"priority"`
-	CreatedAt time.Time        `bson:"created_at" json:"created_at"`
-	StartedAt  time.Time        `bson:"started_at" json:"started_at"`
-	ExpiresAt time.Time        `bson:"expires_at" json:"expires_at"`
+	mgm.DefaultModel `bson:",inline"`
+
+	ID        string           `json:"id" bson:"_id"`
+	Type      AnnouncementType `json:"type" bson:"type"`
+	Message   string           `json:"message" bson:"message"`
+	Priority  Priority         `json:"priority" bson:"priority"`
+	CreatedAt time.Time        `json:"created_at" bson:"created_at"`
+	StartedAt time.Time        `json:"started_at" bson:"started_at"`
+	ExpiresAt time.Time        `json:"expires_at" bson:"expires_at"`
 }
