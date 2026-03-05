@@ -6,6 +6,7 @@ var (
 	WEBSCOKET_CHANNEL = "/ws/announcement"
 
 	SWAGGER_DOCS = "/swagger/*any"
+	ENV = "/.env"
 
 	HEALTH = "/health"
 )

@@ -34,6 +34,7 @@ type JWEConfig struct {
 	Salt      string `json:"salt"`
 	Cipher    string `json:"cipher"`
 	IsCaesar  bool   `json:"is_caesar"`
+	Encrypt   bool   `json:"encrypt"`
 }
 
 var (
@@ -92,5 +93,6 @@ func init() {
 		Salt:      "no-salt",
 		Cipher:    "AES-256-CBC",
 		IsCaesar:  false,
+		Encrypt:   os.Getenv("ENCRYPT") == "true",
 	}
 }
